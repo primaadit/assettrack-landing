@@ -1,0 +1,1259 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AssetTrack — Kelola Aset Perusahaan Lebih Cerdas</title>
+  <meta name="description" content="AssetTrack adalah sistem manajemen aset berbasis SaaS yang membantu perusahaan melacak, meminjam, dan mengelola aset secara real-time." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --purple: #7c3aed; --purple-h: #6d28d9; --purple-l: #a78bfa;
+      --purple-g: rgba(124,58,237,0.15); --purple-g2: rgba(124,58,237,0.08);
+      --bg: #0f0e1a; --bg2: #161428; --bg3: #1e1b35; --bg4: #252244;
+      --card: #1a1830; --card2: #211f3d;
+      --text: #f1f0ff; --text2: #a5b4fc; --text3: #6b7280;
+      --border: rgba(124,58,237,0.2); --border2: rgba(255,255,255,0.06);
+      --green: #10b981; --yellow: #f59e0b; --red: #ef4444; --blue: #3b82f6;
+      --r: 10px; --r2: 16px; --shadow: 0 8px 32px rgba(0,0,0,0.5);
+    }
+    [data-theme="light"] {
+      --bg: #f5f3ff; --bg2: #ede9fe; --bg3: #e8e5fb; --bg4: #ddd8fa;
+      --card: #ffffff; --card2: #f0ebff;
+      --text: #1e1b4b; --text2: #4c1d95; --text3: #6b7280;
+      --border: rgba(124,58,237,0.25); --border2: rgba(0,0,0,0.07);
+      --shadow: 0 4px 20px rgba(0,0,0,0.1);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; overflow-x: hidden; transition: background .3s, color .3s; }
+    a { color: inherit; text-decoration: none; }
+    .container { max-width: 1160px; margin: 0 auto; padding: 0 24px; }
+    .section { padding: 96px 0; }
+    .tag { display:inline-block; background:var(--purple-g); color:var(--purple-l); border:1px solid var(--border); padding:5px 14px; border-radius:100px; font-size:.75rem; font-weight:600; letter-spacing:.08em; text-transform:uppercase; margin-bottom:14px; }
+    .h1 { font-size:clamp(2rem,5vw,3.2rem); font-weight:900; line-height:1.1; }
+    .h2 { font-size:clamp(1.6rem,3.5vw,2.4rem); font-weight:800; line-height:1.2; margin-bottom:12px; }
+    .sub { font-size:1.05rem; color:var(--text2); max-width:580px; }
+    .btn { display:inline-flex; align-items:center; gap:8px; padding:12px 24px; border-radius:var(--r); font-weight:600; font-size:.95rem; cursor:pointer; border:none; transition:.2s; }
+    .btn-primary { background:var(--purple); color:#fff; }
+    .btn-primary:hover { background:var(--purple-h); transform:translateY(-1px); box-shadow:0 6px 20px rgba(124,58,237,.4); }
+    .btn-outline { background:transparent; color:var(--text); border:1px solid var(--border); }
+    .btn-outline:hover { background:var(--purple-g); border-color:var(--purple); }
+    .btn-wa { background:#25d366; color:#fff; }
+    .btn-wa:hover { background:#22c55e; transform:translateY(-1px); }
+
+    /* ── NAV ── */
+    nav { position:fixed; top:0; left:0; right:0; z-index:100; padding:14px 0; backdrop-filter:blur(20px); background:rgba(15,14,26,.85); border-bottom:1px solid var(--border2); transition:.3s; }
+    [data-theme="light"] nav { background:rgba(245,243,255,.9); }
+    .nav-inner { display:flex; align-items:center; justify-content:space-between; }
+    .nav-logo { display:flex; align-items:center; gap:10px; font-weight:800; font-size:1.1rem; }
+    .nav-logo-icon { width:32px; height:32px; background:var(--purple); border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:1rem; }
+    .nav-links { display:flex; align-items:center; gap:28px; }
+    .nav-links a { font-size:.9rem; color:var(--text2); transition:.2s; }
+    .nav-links a:hover { color:var(--text); }
+    .nav-right { display:flex; align-items:center; gap:12px; }
+    .theme-btn { background:var(--bg3); border:1px solid var(--border); color:var(--text2); width:36px; height:36px; border-radius:8px; cursor:pointer; font-size:1rem; display:flex; align-items:center; justify-content:center; transition:.2s; }
+    .theme-btn:hover { border-color:var(--purple); color:var(--purple); }
+    @media(max-width:768px) { .nav-links { display:none; } }
+
+    /* ── HERO ── */
+    #hero { padding:160px 0 96px; position:relative; overflow:hidden; }
+    .hero-glow { position:absolute; top:-200px; left:50%; transform:translateX(-50%); width:800px; height:800px; background:radial-gradient(circle, rgba(124,58,237,.25) 0%, transparent 70%); pointer-events:none; }
+    .hero-grid { display:grid; grid-template-columns:1fr 1fr; gap:64px; align-items:center; }
+    .hero-badge { display:inline-flex; align-items:center; gap:8px; background:var(--purple-g); border:1px solid var(--border); padding:6px 14px; border-radius:100px; font-size:.8rem; color:var(--purple-l); margin-bottom:24px; }
+    .hero-badge .dot { width:8px; height:8px; background:var(--green); border-radius:50%; animation:pulse 2s infinite; }
+    .hero-title { margin-bottom:20px; }
+    .hero-title .accent { color:var(--purple-l); }
+    .hero-desc { color:var(--text2); font-size:1.1rem; margin-bottom:32px; max-width:480px; }
+    .hero-ctas { display:flex; gap:12px; flex-wrap:wrap; }
+    .hero-stats { display:flex; gap:32px; margin-top:40px; padding-top:32px; border-top:1px solid var(--border2); }
+    .stat-item { }
+    .stat-num { font-size:1.5rem; font-weight:800; color:var(--purple-l); }
+    .stat-label { font-size:.8rem; color:var(--text3); }
+
+    /* Hero mock — live dashboard */
+    .hero-mock { position:relative; }
+    .mock-window { background:var(--card); border:1px solid var(--border); border-radius:var(--r2); overflow:hidden; box-shadow:var(--shadow); }
+    .mock-titlebar { display:flex; align-items:center; gap:8px; padding:12px 16px; background:var(--card2); border-bottom:1px solid var(--border2); }
+    .mock-dot { width:10px; height:10px; border-radius:50%; }
+    .mock-url { flex:1; background:var(--bg3); border-radius:6px; height:22px; display:flex; align-items:center; padding:0 10px; font-size:.7rem; color:var(--text3); font-family:'JetBrains Mono',monospace; }
+    .mock-body { padding:16px; }
+    .mock-stat-row { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:14px; }
+    .mock-stat-card { background:var(--bg3); border:1px solid var(--border2); border-radius:var(--r); padding:12px; }
+    .mock-stat-num { font-size:1.3rem; font-weight:800; }
+    .mock-stat-lbl { font-size:.65rem; color:var(--text3); text-transform:uppercase; }
+    .mock-chart { background:var(--bg3); border:1px solid var(--border2); border-radius:var(--r); padding:12px; margin-bottom:10px; height:80px; display:flex; align-items:flex-end; gap:6px; }
+    .mock-bar { flex:1; border-radius:4px 4px 0 0; background:var(--purple-g); border:1px solid var(--border); transform-origin:bottom; animation:bar-grow .8s ease-out forwards; opacity:0; }
+    @keyframes bar-grow { from{transform:scaleY(0);opacity:0} to{transform:scaleY(1);opacity:1} }
+    .mock-table { }
+    .mock-row { display:flex; align-items:center; gap:8px; padding:7px 0; border-bottom:1px solid var(--border2); font-size:.72rem; }
+    .mock-row:last-child { border-bottom:none; }
+    .mock-dot-status { width:7px; height:7px; border-radius:50%; flex-shrink:0; }
+    .mock-name { flex:1; font-weight:500; }
+    .mock-badge { padding:2px 7px; border-radius:4px; font-size:.65rem; font-weight:600; }
+    .badge-available { background:rgba(16,185,129,.15); color:#10b981; }
+    .badge-borrowed  { background:rgba(245,158,11,.15); color:#f59e0b; }
+    .badge-requested { background:rgba(59,130,246,.15); color:#3b82f6; }
+    @media(max-width:768px) { .hero-grid { grid-template-columns:1fr; } .hero-mock { display:none; } }
+
+    /* ── DEMO SECTION ── */
+    #demo { background:var(--bg2); }
+    .demo-tabs { display:flex; gap:4px; background:var(--bg3); border:1px solid var(--border); border-radius:var(--r2); padding:4px; margin-bottom:40px; flex-wrap:wrap; }
+    .demo-tab { flex:1; min-width:120px; padding:10px 16px; border-radius:8px; border:none; background:transparent; color:var(--text3); font-weight:600; font-size:.85rem; cursor:pointer; transition:.2s; white-space:nowrap; }
+    .demo-tab.active { background:var(--purple); color:#fff; box-shadow:0 4px 12px rgba(124,58,237,.4); }
+    .demo-tab:hover:not(.active) { color:var(--text); background:var(--bg4); }
+    .demo-panel { display:none; }
+    .demo-panel.active { display:grid; grid-template-columns:1fr 1fr; gap:48px; align-items:start; }
+    .demo-info .step-num { width:28px; height:28px; border-radius:50%; background:var(--purple); display:inline-flex; align-items:center; justify-content:center; font-weight:700; font-size:.8rem; margin-right:10px; flex-shrink:0; }
+    .demo-steps { margin-top:20px; }
+    .demo-step { display:flex; align-items:flex-start; gap:12px; padding:10px 0; opacity:.4; transition:.4s; }
+    .demo-step.current { opacity:1; }
+    .demo-step.done { opacity:.7; }
+    .step-icon { width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:.9rem; flex-shrink:0; background:var(--bg3); border:1px solid var(--border); transition:.4s; }
+    .demo-step.current .step-icon { background:var(--purple); border-color:var(--purple); }
+    .demo-step.done .step-icon { background:rgba(16,185,129,.2); border-color:var(--green); }
+    .step-text { font-size:.9rem; }
+    .step-title { font-weight:600; }
+    .step-desc { font-size:.8rem; color:var(--text3); margin-top:2px; }
+    @media(max-width:768px) { .demo-panel.active { grid-template-columns:1fr; } }
+
+    /* Animated mockup screen */
+    .demo-screen { background:var(--card); border:1px solid var(--border); border-radius:var(--r2); overflow:hidden; min-height:360px; position:relative; box-shadow:var(--shadow); }
+    .screen-header { background:var(--card2); border-bottom:1px solid var(--border2); padding:12px 16px; display:flex; align-items:center; gap:8px; }
+    .screen-dots { display:flex; gap:5px; }
+    .screen-dots span { width:10px; height:10px; border-radius:50%; }
+    .screen-title { font-size:.78rem; color:var(--text3); margin-left:8px; font-family:'JetBrains Mono',monospace; }
+    .screen-body { padding:16px; }
+
+    /* ── FEATURES GRID ── */
+    #features { }
+    .features-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:24px; margin-top:48px; }
+    .feat-card { background:var(--card); border:1px solid var(--border2); border-radius:var(--r2); padding:28px; transition:.3s; cursor:default; }
+    .feat-card:hover { border-color:var(--purple); transform:translateY(-3px); box-shadow:0 8px 32px rgba(124,58,237,.2); }
+    .feat-icon { width:48px; height:48px; background:var(--purple-g); border:1px solid var(--border); border-radius:var(--r); display:flex; align-items:center; justify-content:center; font-size:1.3rem; margin-bottom:16px; }
+    .feat-title { font-weight:700; margin-bottom:8px; font-size:1rem; }
+    .feat-desc { font-size:.88rem; color:var(--text3); line-height:1.6; }
+
+    /* ── COMPARE TABLE ── */
+    #compare { background:var(--bg2); }
+    .compare-table { width:100%; border-collapse:collapse; margin-top:48px; }
+    .compare-table th { padding:14px 16px; text-align:left; font-size:.8rem; font-weight:600; text-transform:uppercase; letter-spacing:.06em; color:var(--text3); border-bottom:2px solid var(--border); }
+    .compare-table th.highlight { color:var(--purple-l); }
+    .compare-table td { padding:14px 16px; border-bottom:1px solid var(--border2); font-size:.9rem; vertical-align:middle; }
+    .compare-table tr:hover td { background:var(--bg3); }
+    .compare-table td:nth-child(2) { font-weight:600; }
+    .check { color:var(--green); font-size:1rem; }
+    .cross { color:var(--red); font-size:1rem; }
+    .partial { color:var(--yellow); font-size:.8rem; font-weight:600; }
+    .col-us { background:var(--purple-g2); }
+
+    /* ── PRICING ── */
+    #pricing { }
+    .pricing-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:20px; margin-top:48px; }
+    .price-card { background:var(--card); border:1px solid var(--border2); border-radius:var(--r2); padding:28px; transition:.3s; position:relative; overflow:hidden; }
+    .price-card.popular { border-color:var(--purple); }
+    .price-card.popular::before { content:'Most Popular'; position:absolute; top:14px; right:-26px; background:var(--purple); color:#fff; font-size:.65rem; font-weight:700; padding:4px 36px; transform:rotate(45deg); letter-spacing:.05em; }
+    .price-card:hover { transform:translateY(-4px); box-shadow:var(--shadow); }
+    .price-name { font-weight:800; font-size:1rem; margin-bottom:6px; }
+    .price-amount { font-size:2rem; font-weight:900; color:var(--purple-l); margin:12px 0 4px; }
+    .price-amount span { font-size:.9rem; font-weight:400; color:var(--text3); }
+    .price-desc { font-size:.83rem; color:var(--text3); margin-bottom:20px; padding-bottom:20px; border-bottom:1px solid var(--border2); }
+    .price-features { list-style:none; }
+    .price-features li { font-size:.85rem; padding:5px 0; display:flex; align-items:center; gap:8px; color:var(--text2); }
+    .price-features li::before { content:'✓'; color:var(--green); font-weight:700; }
+    .price-cta { margin-top:24px; width:100%; text-align:center; padding:11px; border-radius:var(--r); font-weight:600; font-size:.9rem; cursor:pointer; border:none; transition:.2s; background:var(--purple-g); color:var(--purple-l); border:1px solid var(--border); }
+    .price-cta:hover { background:var(--purple); color:#fff; }
+    .popular .price-cta { background:var(--purple); color:#fff; }
+    .popular .price-cta:hover { background:var(--purple-h); }
+
+    /* ── ABOUT DEV ── */
+    #about { background:var(--bg2); }
+    .about-grid { display:grid; grid-template-columns:auto 1fr; gap:48px; align-items:start; }
+    .dev-avatar { width:180px; height:180px; border-radius:var(--r2); object-fit:cover; border:3px solid var(--purple); box-shadow:0 0 40px rgba(124,58,237,.4); }
+    .dev-avatar-placeholder { width:180px; height:180px; border-radius:var(--r2); background:var(--purple-g); border:3px solid var(--purple); display:flex; align-items:center; justify-content:center; font-size:4rem; box-shadow:0 0 40px rgba(124,58,237,.4); flex-shrink:0; }
+    .dev-name { font-size:1.6rem; font-weight:800; margin-bottom:4px; }
+    .dev-role { color:var(--purple-l); font-weight:600; margin-bottom:16px; }
+    .dev-quote { font-size:1rem; color:var(--text2); border-left:3px solid var(--purple); padding-left:16px; margin:20px 0; font-style:italic; }
+    .cert-grid { display:flex; flex-wrap:wrap; gap:10px; margin-top:16px; }
+    .cert-badge { background:var(--purple-g); border:1px solid var(--border); padding:6px 14px; border-radius:100px; font-size:.78rem; font-weight:600; color:var(--purple-l); }
+    .exp-list { margin-top:16px; }
+    .exp-item { display:flex; gap:12px; margin-bottom:12px; }
+    .exp-dot { width:8px; height:8px; border-radius:50%; background:var(--purple); margin-top:6px; flex-shrink:0; }
+    .exp-text { font-size:.88rem; }
+    .exp-company { font-weight:600; }
+    .exp-detail { color:var(--text3); font-size:.8rem; }
+    @media(max-width:640px) { .about-grid { grid-template-columns:1fr; } }
+
+    /* ── CTA ── */
+    #cta { text-align:center; background:linear-gradient(135deg, var(--bg) 0%, rgba(124,58,237,.12) 50%, var(--bg) 100%); }
+    .cta-box { max-width:600px; margin:0 auto; }
+    .cta-ctas { display:flex; gap:12px; justify-content:center; flex-wrap:wrap; margin-top:32px; }
+
+    /* ── FOOTER ── */
+    footer { background:var(--bg2); border-top:1px solid var(--border2); padding:40px 0 24px; }
+    .footer-inner { display:grid; grid-template-columns:1.5fr 1fr 1fr; gap:40px; margin-bottom:32px; }
+    .footer-brand { }
+    .footer-logo { display:flex; align-items:center; gap:10px; font-weight:800; margin-bottom:12px; }
+    .footer-desc { font-size:.85rem; color:var(--text3); line-height:1.6; }
+    .footer-col h4 { font-size:.85rem; font-weight:700; margin-bottom:12px; text-transform:uppercase; letter-spacing:.06em; color:var(--text2); }
+    .footer-col ul li { margin-bottom:7px; }
+    .footer-col ul li a { font-size:.85rem; color:var(--text3); transition:.2s; }
+    .footer-col ul li a:hover { color:var(--text); }
+    .footer-bottom { border-top:1px solid var(--border2); padding-top:20px; display:flex; justify-content:space-between; align-items:center; }
+    .footer-bottom p { font-size:.8rem; color:var(--text3); }
+    @media(max-width:640px) { .footer-inner { grid-template-columns:1fr; } .footer-bottom { flex-direction:column; gap:8px; text-align:center; } }
+
+    @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.6;transform:scale(1.3)} }
+    @keyframes fadeUp { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:translateY(0)} }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+    @keyframes typing-cursor { 0%,100%{border-right-color:var(--purple)} 50%{border-right-color:transparent} }
+    .fade-up { animation:fadeUp .7s ease-out both; }
+    .delay-1 { animation-delay:.1s; }
+    .delay-2 { animation-delay:.2s; }
+    .delay-3 { animation-delay:.3s; }
+    .delay-4 { animation-delay:.4s; }
+
+    /* Typewriter */
+    .typewriter { overflow:hidden; border-right:2px solid var(--purple); white-space:nowrap; animation:typing-cursor .8s infinite; display:inline-block; }
+
+    /* Notification popup */
+    .notif-popup { position:absolute; bottom:16px; right:16px; background:var(--card2); border:1px solid var(--green); border-radius:var(--r); padding:10px 14px; font-size:.78rem; display:flex; align-items:center; gap:8px; box-shadow:0 4px 16px rgba(0,0,0,.3); transform:translateY(60px); opacity:0; transition:.5s; z-index:10; }
+    .notif-popup.show { transform:translateY(0); opacity:1; }
+    .notif-dot { width:8px; height:8px; border-radius:50%; background:var(--green); animation:pulse 1.5s infinite; }
+
+    /* QR scan animation */
+    .qr-container { position:relative; display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%; padding:24px; }
+    .qr-box { width:140px; height:140px; border:2px solid var(--purple); border-radius:var(--r); position:relative; display:flex; align-items:center; justify-content:center; background:var(--bg3); }
+    .qr-corner { position:absolute; width:20px; height:20px; border-color:var(--purple-l); border-style:solid; }
+    .qr-corner.tl { top:-2px; left:-2px; border-width:3px 0 0 3px; }
+    .qr-corner.tr { top:-2px; right:-2px; border-width:3px 3px 0 0; }
+    .qr-corner.bl { bottom:-2px; left:-2px; border-width:0 0 3px 3px; }
+    .qr-corner.br { bottom:-2px; right:-2px; border-width:0 3px 3px 0; }
+    .qr-scan-line { position:absolute; left:4px; right:4px; height:2px; background:linear-gradient(90deg, transparent, var(--purple), transparent); animation:qr-scan 2s ease-in-out infinite; }
+    @keyframes qr-scan { 0%{top:8px;opacity:0} 10%{opacity:1} 90%{opacity:1} 100%{top:calc(100% - 8px);opacity:0} }
+    .qr-pixels { display:grid; grid-template-columns:repeat(7,1fr); gap:3px; padding:12px; }
+    .qr-px { width:10px; height:10px; border-radius:1px; background:var(--text3); opacity:.3; }
+    .qr-px.dark { opacity:1; background:var(--text); }
+    .qr-result { margin-top:20px; text-align:center; }
+
+    /* Scroll animations */
+    .scroll-reveal { opacity:0; transform:translateY(30px); transition:.6s ease-out; }
+    .scroll-reveal.visible { opacity:1; transform:translateY(0); }
+  </style>
+</head>
+<body>
+
+<!-- ── NAV ── -->
+<nav>
+  <div class="container nav-inner">
+    <div class="nav-logo">
+      <div class="nav-logo-icon">📊</div>
+      AssetTrack
+    </div>
+    <div class="nav-links">
+      <a href="#demo">Demo</a>
+      <a href="#features">Fitur</a>
+      <a href="#compare">Perbandingan</a>
+      <a href="#pricing">Harga</a>
+      <a href="#about">Developer</a>
+    </div>
+    <div class="nav-right">
+      <button class="theme-btn" onclick="toggleTheme()" id="themeBtn" title="Toggle dark/light">🌙</button>
+      <a href="https://wa.me/6281229590817" class="btn btn-primary" style="padding:9px 18px;font-size:.85rem;">
+        💬 Hubungi
+      </a>
+    </div>
+  </div>
+</nav>
+
+<!-- ── HERO ── -->
+<section id="hero" class="section">
+  <div class="hero-glow"></div>
+  <div class="container">
+    <div class="hero-grid">
+      <div>
+        <div class="hero-badge fade-up">
+          <span class="dot"></span>
+          Live — Digunakan oleh perusahaan BUMN & swasta
+        </div>
+        <h1 class="h1 hero-title fade-up delay-1">
+          Aset Perusahaan<br><span class="accent">Terkontrol Penuh,</span><br>Real-Time.
+        </h1>
+        <p class="hero-desc fade-up delay-2">
+          Dari peminjaman hingga pengembalian — semua terdokumentasi dengan foto, approval, dan laporan otomatis. Tidak ada lagi aset hilang atau peminjaman tanpa jejak.
+        </p>
+        <div class="hero-ctas fade-up delay-3">
+          <a href="https://wa.me/6281229590817?text=Halo%20Prima%2C%20saya%20ingin%20coba%20demo%20AssetTrack" class="btn btn-primary">🚀 Minta Demo</a>
+          <a href="#demo" class="btn btn-outline">▶ Lihat Cara Kerja</a>
+        </div>
+        <div class="hero-stats fade-up delay-4">
+          <div class="stat-item">
+            <div class="stat-num" id="counter-assets">0</div>
+            <div class="stat-label">Aset Terdaftar</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-num" id="counter-loans">0</div>
+            <div class="stat-label">Peminjaman Proses</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-num" id="counter-orgs">0</div>
+            <div class="stat-label">Perusahaan Aktif</div>
+          </div>
+        </div>
+      </div>
+      <!-- Live dashboard mock -->
+      <div class="hero-mock fade-up delay-2">
+        <div class="mock-window">
+          <div class="mock-titlebar">
+            <div class="mock-dot" style="background:#ef4444"></div>
+            <div class="mock-dot" style="background:#f59e0b"></div>
+            <div class="mock-dot" style="background:#10b981"></div>
+            <div class="mock-url">app.assettrack.id/dashboard</div>
+          </div>
+          <div class="mock-body">
+            <div class="mock-stat-row">
+              <div class="mock-stat-card">
+                <div class="mock-stat-num" style="color:var(--purple-l)" id="hero-stat-total">247</div>
+                <div class="mock-stat-lbl">Total Aset</div>
+              </div>
+              <div class="mock-stat-card">
+                <div class="mock-stat-num" style="color:var(--yellow)" id="hero-stat-borrowed">38</div>
+                <div class="mock-stat-lbl">Dipinjam</div>
+              </div>
+              <div class="mock-stat-card">
+                <div class="mock-stat-num" style="color:var(--green)" id="hero-stat-avail">196</div>
+                <div class="mock-stat-lbl">Tersedia</div>
+              </div>
+            </div>
+            <div class="mock-chart" id="heroChart"></div>
+            <div class="mock-table" id="heroTable"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── DEMO SECTION ── -->
+<section id="demo" class="section">
+  <div class="container">
+    <div class="text-center scroll-reveal" style="text-align:center;margin-bottom:0">
+      <div class="tag">Live Demo</div>
+      <h2 class="h2">Lihat Langsung Cara Kerjanya</h2>
+      <p class="sub" style="margin:0 auto">Simulasi real-time — persis seperti yang user lihat dan lakukan di aplikasi</p>
+    </div>
+    <div style="margin-top:48px">
+      <div class="demo-tabs">
+        <button class="demo-tab active" onclick="switchDemo('borrow')">📋 Ajukan Pinjam</button>
+        <button class="demo-tab" onclick="switchDemo('approve')">✅ Approve Admin</button>
+        <button class="demo-tab" onclick="switchDemo('return')">↩️ Pengembalian</button>
+        <button class="demo-tab" onclick="switchDemo('qr')">📱 Scan QR</button>
+        <button class="demo-tab" onclick="switchDemo('dashboard')">📊 Dashboard</button>
+      </div>
+      <div id="demo-borrow" class="demo-panel active scroll-reveal">
+        <div class="demo-info">
+          <h3 style="font-size:1.2rem;font-weight:700;margin-bottom:8px">User Ajukan Peminjaman</h3>
+          <p style="font-size:.9rem;color:var(--text3);margin-bottom:20px">Pilih aset, isi tanggal, submit — sistem langsung lock aset untuk mencegah double booking.</p>
+          <div class="demo-steps" id="borrow-steps">
+            <div class="demo-step current" id="borrow-s1">
+              <div class="step-icon">🔍</div>
+              <div class="step-text"><div class="step-title">Cari aset tersedia</div><div class="step-desc">Filter by kategori, cek status real-time</div></div>
+            </div>
+            <div class="demo-step" id="borrow-s2">
+              <div class="step-icon">📅</div>
+              <div class="step-text"><div class="step-title">Pilih & isi form pinjam</div><div class="step-desc">Tanggal batas, tujuan penggunaan</div></div>
+            </div>
+            <div class="demo-step" id="borrow-s3">
+              <div class="step-icon">🔒</div>
+              <div class="step-text"><div class="step-title">Sistem atomic lock</div><div class="step-desc">Aset langsung berubah "Sedang Diproses" — user lain tidak bisa request</div></div>
+            </div>
+            <div class="demo-step" id="borrow-s4">
+              <div class="step-icon">📬</div>
+              <div class="step-text"><div class="step-title">Notifikasi ke admin</div><div class="step-desc">Admin menerima request di dashboard mereka</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="demo-screen">
+          <div class="screen-header">
+            <div class="screen-dots"><span style="background:#ef4444"></span><span style="background:#f59e0b"></span><span style="background:#10b981"></span></div>
+            <span class="screen-title">AssetTrack — Pinjam Aset</span>
+          </div>
+          <div class="screen-body" id="borrow-screen">
+            <!-- Injected by JS -->
+          </div>
+          <div class="notif-popup" id="borrow-notif">
+            <span class="notif-dot"></span>
+            <span>Pengajuan terkirim! Menunggu approval admin...</span>
+          </div>
+        </div>
+      </div>
+
+      <div id="demo-approve" class="demo-panel">
+        <div class="demo-info">
+          <h3 style="font-size:1.2rem;font-weight:700;margin-bottom:8px">Admin Approve Peminjaman</h3>
+          <p style="font-size:.9rem;color:var(--text3);margin-bottom:20px">Admin lihat semua request masuk, upload foto kondisi aset, klik approve — otomatis update status semua pihak.</p>
+          <div class="demo-steps" id="approve-steps">
+            <div class="demo-step current" id="approve-s1">
+              <div class="step-icon">📥</div>
+              <div class="step-text"><div class="step-title">Lihat request masuk</div><div class="step-desc">Semua pending request tampil dengan detail pemohon</div></div>
+            </div>
+            <div class="demo-step" id="approve-s2">
+              <div class="step-icon">📷</div>
+              <div class="step-text"><div class="step-title">Upload foto kondisi aset</div><div class="step-desc">Wajib upload foto before — bukti kondisi sebelum dipinjam</div></div>
+            </div>
+            <div class="demo-step" id="approve-s3">
+              <div class="step-icon">✅</div>
+              <div class="step-text"><div class="step-title">Klik Approve</div><div class="step-desc">Request lain untuk aset sama auto-reject dengan notifikasi</div></div>
+            </div>
+            <div class="demo-step" id="approve-s4">
+              <div class="step-icon">📊</div>
+              <div class="step-text"><div class="step-title">Status update real-time</div><div class="step-desc">Dashboard semua user langsung ter-update tanpa refresh</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="demo-screen">
+          <div class="screen-header">
+            <div class="screen-dots"><span style="background:#ef4444"></span><span style="background:#f59e0b"></span><span style="background:#10b981"></span></div>
+            <span class="screen-title">AssetTrack — Manage Requests</span>
+          </div>
+          <div class="screen-body" id="approve-screen"></div>
+          <div class="notif-popup" id="approve-notif">
+            <span class="notif-dot"></span>
+            <span>✅ Disetujui! Aset tercatat aktif dipinjam.</span>
+          </div>
+        </div>
+      </div>
+
+      <div id="demo-return" class="demo-panel">
+        <div class="demo-info">
+          <h3 style="font-size:1.2rem;font-weight:700;margin-bottom:8px">Proses Pengembalian Aset</h3>
+          <p style="font-size:.9rem;color:var(--text3);margin-bottom:20px">User foto kondisi akhir, submit return — admin verify, AI generate summary kondisi before vs after.</p>
+          <div class="demo-steps" id="return-steps">
+            <div class="demo-step current" id="return-s1">
+              <div class="step-icon">📦</div>
+              <div class="step-text"><div class="step-title">Pilih aset yang dipinjam</div><div class="step-desc">Lihat daftar pinjaman aktif</div></div>
+            </div>
+            <div class="demo-step" id="return-s2">
+              <div class="step-icon">📷</div>
+              <div class="step-text"><div class="step-title">Foto kondisi sekarang</div><div class="step-desc">Wajib upload — bukti kondisi saat dikembalikan</div></div>
+            </div>
+            <div class="demo-step" id="return-s3">
+              <div class="step-icon">🤖</div>
+              <div class="step-text"><div class="step-title">AI Summary otomatis</div><div class="step-desc">Sistem compare kondisi before/after, generate laporan</div></div>
+            </div>
+            <div class="demo-step" id="return-s4">
+              <div class="step-icon">♻️</div>
+              <div class="step-text"><div class="step-title">Aset kembali ke stok</div><div class="step-desc">Langsung bisa dipinjam user lain</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="demo-screen">
+          <div class="screen-header">
+            <div class="screen-dots"><span style="background:#ef4444"></span><span style="background:#f59e0b"></span><span style="background:#10b981"></span></div>
+            <span class="screen-title">AssetTrack — Return Aset</span>
+          </div>
+          <div class="screen-body" id="return-screen"></div>
+          <div class="notif-popup" id="return-notif">
+            <span class="notif-dot"></span>
+            <span>♻️ Aset kembali ke stok. AI summary tersimpan.</span>
+          </div>
+        </div>
+      </div>
+
+      <div id="demo-qr" class="demo-panel">
+        <div class="demo-info">
+          <h3 style="font-size:1.2rem;font-weight:700;margin-bottom:8px">Scan QR — Detail Aset Instan</h3>
+          <p style="font-size:.9rem;color:var(--text3);margin-bottom:20px">Setiap aset punya QR code unik. Scan = langsung lihat status, history, dan siapa yang pegang sekarang.</p>
+          <div class="demo-steps" id="qr-steps">
+            <div class="demo-step current" id="qr-s1">
+              <div class="step-icon">📱</div>
+              <div class="step-text"><div class="step-title">Buka kamera / app</div><div class="step-desc">Tidak perlu install app terpisah — mobile-first</div></div>
+            </div>
+            <div class="demo-step" id="qr-s2">
+              <div class="step-icon">📡</div>
+              <div class="step-text"><div class="step-title">Scan QR pada label aset</div><div class="step-desc">QR unik per aset, dicetak dari sistem</div></div>
+            </div>
+            <div class="demo-step" id="qr-s3">
+              <div class="step-icon">⚡</div>
+              <div class="step-text"><div class="step-title">Detail langsung muncul</div><div class="step-desc">Status, lokasi, lifecycle, history peminjaman</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="demo-screen">
+          <div class="screen-header">
+            <div class="screen-dots"><span style="background:#ef4444"></span><span style="background:#f59e0b"></span><span style="background:#10b981"></span></div>
+            <span class="screen-title">AssetTrack — QR Scan</span>
+          </div>
+          <div class="screen-body" style="padding:0" id="qr-screen">
+            <div class="qr-container">
+              <div style="font-size:.75rem;color:var(--text3);margin-bottom:16px;text-align:center">Arahkan kamera ke QR Code aset</div>
+              <div class="qr-box">
+                <div class="qr-scan-line"></div>
+                <div class="qr-corner tl"></div><div class="qr-corner tr"></div>
+                <div class="qr-corner bl"></div><div class="qr-corner br"></div>
+                <div class="qr-pixels" id="qrPixels"></div>
+              </div>
+              <div class="qr-result" id="qr-result" style="opacity:0;transition:.5s">
+                <div style="background:var(--purple-g);border:1px solid var(--border);border-radius:var(--r);padding:14px;text-align:left;width:220px;margin-top:16px">
+                  <div style="font-size:.7rem;color:var(--text3);margin-bottom:8px">ASET DITEMUKAN ✓</div>
+                  <div style="font-weight:700;font-size:.9rem;margin-bottom:4px">Laptop Dell XPS 15</div>
+                  <div style="font-size:.75rem;color:var(--text2);margin-bottom:8px">IT/LPT/2024/001</div>
+                  <div style="display:flex;gap:6px;flex-wrap:wrap">
+                    <span style="background:rgba(16,185,129,.15);color:#10b981;padding:2px 8px;border-radius:4px;font-size:.7rem;font-weight:600">✓ TERSEDIA</span>
+                    <span style="background:var(--bg3);padding:2px 8px;border-radius:4px;font-size:.7rem;color:var(--text3)">Good</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="demo-dashboard" class="demo-panel">
+        <div class="demo-info">
+          <h3 style="font-size:1.2rem;font-weight:700;margin-bottom:8px">Dashboard Manajemen</h3>
+          <p style="font-size:.9rem;color:var(--text3);margin-bottom:20px">Semua data aset, peminjaman, dan depresiasi dalam satu tampilan. Chart interaktif, export Excel, laporan PDF.</p>
+          <div class="demo-steps" id="dashboard-steps">
+            <div class="demo-step current" id="dashboard-s1">
+              <div class="step-icon">📊</div>
+              <div class="step-text"><div class="step-title">Overview real-time</div><div class="step-desc">Total aset, dipinjam, overdue — update otomatis</div></div>
+            </div>
+            <div class="demo-step" id="dashboard-s2">
+              <div class="step-icon">📉</div>
+              <div class="step-text"><div class="step-title">Laporan depresiasi</div><div class="step-desc">Hitung nilai aset otomatis per kategori</div></div>
+            </div>
+            <div class="demo-step" id="dashboard-s3">
+              <div class="step-icon">📁</div>
+              <div class="step-text"><div class="step-title">Export & laporan</div><div class="step-desc">Excel, log aktivitas, bulk import aset</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="demo-screen">
+          <div class="screen-header">
+            <div class="screen-dots"><span style="background:#ef4444"></span><span style="background:#f59e0b"></span><span style="background:#10b981"></span></div>
+            <span class="screen-title">AssetTrack — Dashboard</span>
+          </div>
+          <div class="screen-body" id="dashboard-screen"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── FEATURES ── -->
+<section id="features" class="section">
+  <div class="container">
+    <div class="scroll-reveal" style="text-align:center">
+      <div class="tag">Fitur Unggulan</div>
+      <h2 class="h2">Semua yang Dibutuhkan<br>Tim IT & Finance</h2>
+    </div>
+    <div class="features-grid">
+      <div class="feat-card scroll-reveal">
+        <div class="feat-icon">🔒</div>
+        <div class="feat-title">Atomic Lock Peminjaman</div>
+        <div class="feat-desc">Sistem PostgreSQL-level lock memastikan tidak ada double booking. Satu aset, satu peminjam — tanpa race condition.</div>
+      </div>
+      <div class="feat-card scroll-reveal">
+        <div class="feat-icon">📷</div>
+        <div class="feat-title">Dokumentasi Foto Wajib</div>
+        <div class="feat-desc">Foto kondisi sebelum dipinjam dan sesudah dikembalikan. Bukti fisik tersimpan, konflik kondisi aset teratasi.</div>
+      </div>
+      <div class="feat-card scroll-reveal">
+        <div class="feat-icon">🔄</div>
+        <div class="feat-title">Real-Time Sync</div>
+        <div class="feat-desc">Status aset berubah → semua user langsung ter-update via Supabase Realtime. Tidak perlu refresh manual.</div>
+      </div>
+      <div class="feat-card scroll-reveal">
+        <div class="feat-icon">🤖</div>
+        <div class="feat-title">AI Condition Summary</div>
+        <div class="feat-desc">Sistem otomatis generate laporan kondisi aset before/after berdasarkan data yang diinput. Dokumentasi tanpa effort.</div>
+      </div>
+      <div class="feat-card scroll-reveal">
+        <div class="feat-icon">👥</div>
+        <div class="feat-title">RBAC Divisi</div>
+        <div class="feat-desc">Manager hanya lihat data divisinya. Admin lihat semua. Director view executive. Role-based access control yang tepat.</div>
+      </div>
+      <div class="feat-card scroll-reveal">
+        <div class="feat-icon">📊</div>
+        <div class="feat-title">Laporan Depresiasi</div>
+        <div class="feat-desc">Hitung nilai depresiasi aset otomatis per kategori. Export ke Excel untuk keperluan finance dan audit.</div>
+      </div>
+      <div class="feat-card scroll-reveal">
+        <div class="feat-icon">📱</div>
+        <div class="feat-title">QR Code per Aset</div>
+        <div class="feat-desc">Generate & cetak QR unik untuk setiap aset. Scan = langsung lihat detail, status, dan history peminjaman.</div>
+      </div>
+      <div class="feat-card scroll-reveal">
+        <div class="feat-icon">📋</div>
+        <div class="feat-title">Audit Log Lengkap</div>
+        <div class="feat-desc">Setiap aksi tercatat: siapa approve, kapan dipinjam, kondisi saat return. Trail tidak bisa dihapus.</div>
+      </div>
+      <div class="feat-card scroll-reveal">
+        <div class="feat-icon">🚗</div>
+        <div class="feat-title">Modul Kendaraan</div>
+        <div class="feat-desc">Catat KM awal/akhir, kondisi bensin, foto odometer. Lengkap untuk fleet management kendaraan operasional.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── COMPARE ── -->
+<section id="compare" class="section">
+  <div class="container">
+    <div class="scroll-reveal" style="text-align:center">
+      <div class="tag">Perbandingan</div>
+      <h2 class="h2">Kenapa AssetTrack?</h2>
+      <p class="sub" style="margin:0 auto 0">Dibandingkan solusi lain yang ada di pasar</p>
+    </div>
+    <div style="overflow-x:auto;margin-top:48px">
+      <table class="compare-table">
+        <thead>
+          <tr>
+            <th>Fitur</th>
+            <th class="highlight col-us">✦ AssetTrack</th>
+            <th>Software ERP</th>
+            <th>Google Sheet</th>
+            <th>App Generik</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Harga terjangkau (SaaS)</td><td class="col-us"><span class="check">✓</span> Mulai gratis</td><td><span class="cross">✗</span> Mahal</td><td><span class="check">✓</span></td><td><span class="check">✓</span></td></tr>
+          <tr><td>Atomic lock double-booking</td><td class="col-us"><span class="check">✓</span> PostgreSQL</td><td><span class="check">✓</span></td><td><span class="cross">✗</span></td><td><span class="cross">✗</span></td></tr>
+          <tr><td>Foto dokumentasi wajib</td><td class="col-us"><span class="check">✓</span> Before & After</td><td><span class="partial">Terbatas</span></td><td><span class="cross">✗</span></td><td><span class="partial">Opsional</span></td></tr>
+          <tr><td>Real-time status sync</td><td class="col-us"><span class="check">✓</span> Supabase RT</td><td><span class="check">✓</span></td><td><span class="cross">✗</span></td><td><span class="partial">Perlu refresh</span></td></tr>
+          <tr><td>RBAC divisi / departemen</td><td class="col-us"><span class="check">✓</span> RLS policy</td><td><span class="check">✓</span></td><td><span class="cross">✗</span></td><td><span class="partial">Basic</span></td></tr>
+          <tr><td>QR Code label aset</td><td class="col-us"><span class="check">✓</span> Built-in</td><td><span class="partial">Add-on</span></td><td><span class="cross">✗</span></td><td><span class="partial">Terbatas</span></td></tr>
+          <tr><td>Laporan depresiasi</td><td class="col-us"><span class="check">✓</span> Otomatis</td><td><span class="check">✓</span></td><td><span class="partial">Manual</span></td><td><span class="cross">✗</span></td></tr>
+          <tr><td>Modul kendaraan (KM, bensin)</td><td class="col-us"><span class="check">✓</span> Lengkap</td><td><span class="partial">Modul terpisah</span></td><td><span class="cross">✗</span></td><td><span class="cross">✗</span></td></tr>
+          <tr><td>Setup & onboarding cepat</td><td class="col-us"><span class="check">✓</span> &lt; 1 hari</td><td><span class="cross">✗</span> Berbulan</td><td><span class="check">✓</span></td><td><span class="check">✓</span></td></tr>
+          <tr><td>Custom sesuai kebutuhan</td><td class="col-us"><span class="check">✓</span> Langsung dev</td><td><span class="cross">✗</span> Vendor</td><td><span class="partial">Manual</span></td><td><span class="cross">✗</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ── PRICING ── -->
+<section id="pricing" class="section">
+  <div class="container">
+    <div class="scroll-reveal" style="text-align:center">
+      <div class="tag">Paket & Harga</div>
+      <h2 class="h2">Transparan, Tidak Ada Biaya Tersembunyi</h2>
+      <p class="sub" style="margin:0 auto">Semua paket sudah termasuk setup & onboarding. Hubungi untuk harga enterprise.</p>
+    </div>
+    <div class="pricing-grid">
+      <div class="price-card scroll-reveal">
+        <div class="price-name">🌱 Starter</div>
+        <div class="price-amount">Gratis <span>/ selamanya</span></div>
+        <div class="price-desc">Cocok untuk tim kecil atau uji coba sistem</div>
+        <ul class="price-features">
+          <li>Hingga 50 aset</li>
+          <li>3 user aktif</li>
+          <li>Peminjaman & return</li>
+          <li>QR Code dasar</li>
+          <li>Laporan sederhana</li>
+        </ul>
+        <button class="price-cta" onclick="window.open('https://wa.me/6281229590817','_blank')">Mulai Gratis →</button>
+      </div>
+      <div class="price-card popular scroll-reveal">
+        <div class="price-name">⚡ Pro</div>
+        <div class="price-amount">Rp 500rb <span>/ bulan</span></div>
+        <div class="price-desc">Untuk tim dan perusahaan berkembang</div>
+        <ul class="price-features">
+          <li>Aset tidak terbatas</li>
+          <li>25 user aktif</li>
+          <li>Foto dokumentasi wajib</li>
+          <li>Realtime sync</li>
+          <li>RBAC divisi</li>
+          <li>Laporan depresiasi</li>
+          <li>Export Excel/PDF</li>
+          <li>Modul kendaraan</li>
+        </ul>
+        <button class="price-cta" onclick="window.open('https://wa.me/6281229590817?text=Halo%2C%20saya%20tertarik%20paket%20Pro%20AssetTrack','_blank')">Hubungi untuk Demo →</button>
+      </div>
+      <div class="price-card scroll-reveal">
+        <div class="price-name">🏢 Enterprise</div>
+        <div class="price-amount">Custom <span>/ negosiasi</span></div>
+        <div class="price-desc">Untuk BUMN, perusahaan besar, multi-cabang</div>
+        <ul class="price-features">
+          <li>User tidak terbatas</li>
+          <li>Multi-divisi & cabang</li>
+          <li>Custom fitur & integrasi</li>
+          <li>SLA & dedicated support</li>
+          <li>On-premise tersedia</li>
+          <li>Training tim lengkap</li>
+        </ul>
+        <button class="price-cta" onclick="window.open('https://wa.me/6281229590817?text=Halo%2C%20saya%20butuh%20penawaran%20Enterprise%20AssetTrack','_blank')">Minta Penawaran →</button>
+      </div>
+      <div class="price-card scroll-reveal">
+        <div class="price-name">🤝 Community</div>
+        <div class="price-amount">Open <span>/ source</span></div>
+        <div class="price-desc">Self-host, modifikasi bebas, kontribusi welcome</div>
+        <ul class="price-features">
+          <li>Kode sumber terbuka</li>
+          <li>Self-host di server sendiri</li>
+          <li>Komunitas developer</li>
+          <li>Dokumentasi lengkap</li>
+          <li>Tanpa biaya lisensi</li>
+        </ul>
+        <button class="price-cta" onclick="window.open('https://wa.me/6281229590817','_blank')">Pelajari lebih →</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── ABOUT DEV ── -->
+<section id="about" class="section">
+  <div class="container">
+    <div class="scroll-reveal" style="text-align:center;margin-bottom:56px">
+      <div class="tag">Developer</div>
+      <h2 class="h2">Dibangun oleh Praktisi,<br>Bukan Sekadar Developer</h2>
+    </div>
+    <div class="about-grid scroll-reveal">
+      <div>
+        <img src="/public/foto_developer.jpg" class="dev-avatar" alt="Prima Praditya"
+          onerror="this.style.display='none';document.getElementById('dev-avatar-placeholder').style.display='flex'">
+        <div class="dev-avatar-placeholder" id="dev-avatar-placeholder" style="display:none">👨‍💻</div>
+      </div>
+      <div>
+        <div class="dev-name">Prima Praditya</div>
+        <div class="dev-role">Senior IT Infrastructure & Security Engineer</div>
+        <div class="dev-quote">"AssetTrack lahir dari frustrasi nyata di lapangan — aset hilang tanpa jejak, peminjaman via WhatsApp, dan tidak ada yang bisa jawab 'laptop itu sekarang di mana?' Saya bangun sistemnya sendiri."</div>
+        <div class="cert-grid">
+          <span class="cert-badge">🛡️ CEH v13 — EC-Council</span>
+          <span class="cert-badge">🔐 Certified Junior Pentester</span>
+          <span class="cert-badge">📋 Info Security Fundamentals</span>
+        </div>
+        <div class="exp-list">
+          <div class="exp-item">
+            <div class="exp-dot"></div>
+            <div class="exp-text">
+              <div class="exp-company">LPEI — Eximbank Indonesia</div>
+              <div class="exp-detail">Senior IT Infrastructure & Security · 5+ tahun</div>
+            </div>
+          </div>
+          <div class="exp-item">
+            <div class="exp-dot"></div>
+            <div class="exp-text">
+              <div class="exp-company">PT Rekayasa Industri (Rekind) — BUMN</div>
+              <div class="exp-detail">IT Infrastructure Engineer</div>
+            </div>
+          </div>
+          <div class="exp-item">
+            <div class="exp-dot"></div>
+            <div class="exp-text">
+              <div class="exp-company">PT Amanullah</div>
+              <div class="exp-detail">IT Security & Infrastructure</div>
+            </div>
+          </div>
+        </div>
+        <div style="display:flex;gap:12px;margin-top:24px;flex-wrap:wrap">
+          <a href="https://wa.me/6281229590817" class="btn btn-wa">💬 WhatsApp +6281229590817</a>
+          <a href="mailto:primapraditya13@yahoo.co.id" class="btn btn-outline">✉️ Email</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── CTA ── -->
+<section id="cta" class="section">
+  <div class="container">
+    <div class="cta-box scroll-reveal">
+      <div class="tag">Mulai Sekarang</div>
+      <h2 class="h2" style="font-size:clamp(1.8rem,4vw,2.8rem)">Siap Kontrol Aset<br>Perusahaan Kamu?</h2>
+      <p class="sub" style="margin:16px auto 0;text-align:center">Setup kurang dari sehari. Langsung pakai, tidak perlu konfigurasi rumit. Hubungi via WhatsApp untuk demo langsung.</p>
+      <div class="cta-ctas">
+        <a href="https://wa.me/6281229590817?text=Halo%20Prima%2C%20saya%20ingin%20demo%20AssetTrack%20untuk%20perusahaan%20saya" class="btn btn-wa" style="font-size:1rem;padding:14px 28px">
+          💬 WhatsApp Sekarang
+        </a>
+        <a href="mailto:primapraditya13@yahoo.co.id" class="btn btn-outline" style="font-size:1rem;padding:14px 28px">
+          ✉️ Kirim Email
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <div class="container">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <div class="footer-logo">
+          <div class="nav-logo-icon" style="width:28px;height:28px;font-size:.9rem">📊</div>
+          AssetTrack
+        </div>
+        <p class="footer-desc">Sistem manajemen aset perusahaan berbasis cloud. Real-time, terdokumentasi, dan mudah digunakan oleh semua level — dari staff hingga direktur.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Produk</h4>
+        <ul>
+          <li><a href="#features">Fitur</a></li>
+          <li><a href="#demo">Demo</a></li>
+          <li><a href="#pricing">Harga</a></li>
+          <li><a href="#compare">Perbandingan</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Kontak</h4>
+        <ul>
+          <li><a href="https://wa.me/6281229590817">WhatsApp</a></li>
+          <li><a href="mailto:primapraditya13@yahoo.co.id">Email</a></li>
+          <li><a href="#about">Tentang Developer</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2024 AssetTrack by Salim Labs. Dibangun dengan ❤️ oleh Prima Praditya.</p>
+      <p style="font-family:'JetBrains Mono',monospace;font-size:.72rem">v9.2 · React · Supabase · Vite</p>
+    </div>
+  </div>
+</footer>
+
+<script>
+// ── THEME TOGGLE ──
+function toggleTheme() {
+  const html = document.documentElement;
+  const isDark = html.getAttribute('data-theme') === 'dark';
+  html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+  document.getElementById('themeBtn').textContent = isDark ? '🌙' : '☀️';
+  localStorage.setItem('at-theme', isDark ? 'light' : 'dark');
+}
+(function() {
+  const saved = localStorage.getItem('at-theme');
+  if (saved) {
+    document.documentElement.setAttribute('data-theme', saved);
+    document.getElementById('themeBtn').textContent = saved === 'light' ? '🌙' : '☀️';
+  }
+})();
+
+// ── COUNTER ANIMATION ──
+function animateCounter(el, target, suffix='') {
+  let current = 0;
+  const step = Math.ceil(target / 60);
+  const timer = setInterval(() => {
+    current = Math.min(current + step, target);
+    el.textContent = current.toLocaleString('id-ID') + suffix;
+    if (current >= target) clearInterval(timer);
+  }, 25);
+}
+setTimeout(() => {
+  animateCounter(document.getElementById('counter-assets'), 2400, '+');
+  animateCounter(document.getElementById('counter-loans'), 180, '+');
+  animateCounter(document.getElementById('counter-orgs'), 12, '+');
+}, 800);
+
+// ── HERO CHART ──
+(function buildHeroChart() {
+  const chart = document.getElementById('heroChart');
+  const heights = [40,65,55,80,70,90,75,60,85,72];
+  heights.forEach((h, i) => {
+    const bar = document.createElement('div');
+    bar.className = 'mock-bar';
+    bar.style.cssText = `height:${h}%;--h:${h}%;animation-delay:${i*0.08}s;background:${i===9?'var(--purple)':'var(--purple-g)'};border-color:var(--border)`;
+    chart.appendChild(bar);
+  });
+})();
+
+// ── HERO TABLE ──
+(function buildHeroTable() {
+  const assets = [
+    {name:'Laptop Dell XPS 15', code:'IT/LPT/001', status:'Tersedia', color:'var(--green)', dot:'#10b981'},
+    {name:'Proyektor Epson EB', code:'GU/PRJ/002', status:'Dipinjam', color:'var(--yellow)', dot:'#f59e0b'},
+    {name:'Kendaraan Avanza', code:'OP/KND/001', status:'Diproses', color:'#3b82f6', dot:'#3b82f6'},
+  ];
+  const tbl = document.getElementById('heroTable');
+  assets.forEach(a => {
+    const row = document.createElement('div');
+    row.className = 'mock-row';
+    row.innerHTML = `<div class="mock-dot-status" style="background:${a.dot}"></div>
+      <div class="mock-name">${a.name}</div>
+      <div style="font-size:.65rem;color:var(--text3);font-family:'JetBrains Mono',monospace">${a.code}</div>
+      <div class="mock-badge" style="background:${a.dot}22;color:${a.dot}">${a.status}</div>`;
+    tbl.appendChild(row);
+  });
+})();
+
+// ── QR PIXELS ──
+(function buildQR() {
+  const pattern = [1,1,1,0,1,1,1, 1,0,1,0,1,0,1, 1,0,1,1,1,0,1, 0,1,0,0,0,1,0, 1,0,1,0,1,0,1, 1,0,0,1,0,0,1, 1,1,1,0,1,1,1];
+  const container = document.getElementById('qrPixels');
+  if (!container) return;
+  pattern.forEach(d => {
+    const px = document.createElement('div');
+    px.className = 'qr-px' + (d ? ' dark' : '');
+    container.appendChild(px);
+  });
+})();
+
+// ── DEMO TABS ──
+let demoTimers = {};
+
+function switchDemo(name) {
+  document.querySelectorAll('.demo-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.demo-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('demo-' + name).classList.add('active');
+  event.currentTarget.classList.add('active');
+  Object.values(demoTimers).forEach(clearTimeout);
+  demoTimers = {};
+  demos[name] && demos[name]();
+}
+
+// ── DEMO: BORROW ──
+function runBorrowDemo() {
+  const screen = document.getElementById('borrow-screen');
+  const notif = document.getElementById('borrow-notif');
+  notif.classList.remove('show');
+
+  screen.innerHTML = `
+    <div style="font-size:.75rem;color:var(--text3);margin-bottom:12px;font-weight:600;text-transform:uppercase;letter-spacing:.06em">Daftar Aset Tersedia</div>
+    <div id="borrow-asset-list"></div>
+    <div id="borrow-form" style="display:none;margin-top:12px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:12px">
+      <div style="font-weight:700;font-size:.82rem;margin-bottom:10px">📋 Form Peminjaman</div>
+      <div id="borrow-selected-asset" style="background:var(--purple-g);border:1px solid var(--border);border-radius:6px;padding:8px;font-size:.78rem;margin-bottom:8px"></div>
+      <div id="borrow-date-field" style="opacity:0;transition:.4s">
+        <div style="font-size:.7rem;color:var(--text3);margin-bottom:4px">Batas Pengembalian</div>
+        <div style="background:var(--bg);border:1px solid var(--border2);border-radius:6px;padding:7px 10px;font-size:.78rem;font-family:'JetBrains Mono',monospace;color:var(--text2)">2025-07-15</div>
+      </div>
+      <div id="borrow-notes-field" style="opacity:0;transition:.4s;margin-top:8px">
+        <div style="font-size:.7rem;color:var(--text3);margin-bottom:4px">Tujuan Penggunaan</div>
+        <div style="background:var(--bg);border:1px solid var(--border2);border-radius:6px;padding:7px 10px;font-size:.78rem;color:var(--text2)" id="borrow-typing-target"></div>
+      </div>
+      <div id="borrow-submit-btn" style="opacity:0;transition:.4s;margin-top:10px">
+        <button style="background:var(--purple);color:#fff;border:none;border-radius:6px;padding:8px 16px;font-size:.78rem;font-weight:600;cursor:pointer;width:100%">🚀 Ajukan Peminjaman</button>
+      </div>
+    </div>`;
+
+  const assets = [
+    {name:'Laptop Dell XPS 15', code:'IT/LPT/001', cat:'Elektronik', status:'available'},
+    {name:'Proyektor Epson EB', code:'GU/PRJ/002', cat:'Umum', status:'available'},
+    {name:'Kamera Sony A7', code:'MK/CAM/001', cat:'Elektronik', status:'borrowed'},
+  ];
+  const list = document.getElementById('borrow-asset-list');
+  assets.forEach((a, i) => {
+    const row = document.createElement('div');
+    row.style.cssText = `display:flex;align-items:center;gap:8px;padding:8px;border-radius:6px;margin-bottom:4px;border:1px solid var(--border2);cursor:pointer;transition:.2s;font-size:.78rem;background:var(--bg3)`;
+    row.id = `borrow-asset-${i}`;
+    const avail = a.status === 'available';
+    row.innerHTML = `<div style="width:7px;height:7px;border-radius:50%;background:${avail?'#10b981':'#f59e0b'};flex-shrink:0"></div>
+      <div style="flex:1;font-weight:500">${a.name}</div>
+      <div style="color:var(--text3);font-size:.68rem;font-family:'JetBrains Mono',monospace">${a.code}</div>
+      <div style="padding:2px 7px;border-radius:4px;font-size:.65rem;font-weight:600;background:${avail?'rgba(16,185,129,.15)':'rgba(245,158,11,.15)'};color:${avail?'#10b981':'#f59e0b'}">${avail?'Tersedia':'Dipinjam'}</div>`;
+    if (avail) row.onmouseenter = () => row.style.borderColor = 'var(--purple)';
+    if (avail) row.onmouseleave = () => row.style.borderColor = 'var(--border2)';
+    list.appendChild(row);
+  });
+
+  // Animate: highlight first row
+  setSteps('borrow', 1);
+  demoTimers.t1 = setTimeout(() => {
+    const row = document.getElementById('borrow-asset-0');
+    row.style.borderColor = 'var(--purple)';
+    row.style.background = 'var(--purple-g)';
+  }, 800);
+  demoTimers.t2 = setTimeout(() => {
+    setSteps('borrow', 2);
+    document.getElementById('borrow-form').style.display = 'block';
+    document.getElementById('borrow-selected-asset').innerHTML = '✦ <b>Laptop Dell XPS 15</b> — IT/LPT/001';
+  }, 1600);
+  demoTimers.t3 = setTimeout(() => {
+    document.getElementById('borrow-date-field').style.opacity = '1';
+  }, 2200);
+  demoTimers.t4 = setTimeout(() => {
+    document.getElementById('borrow-notes-field').style.opacity = '1';
+    typeText('borrow-typing-target', 'Presentasi klien Q3 2025', 60);
+  }, 2800);
+  demoTimers.t5 = setTimeout(() => {
+    document.getElementById('borrow-submit-btn').style.opacity = '1';
+  }, 4200);
+  demoTimers.t6 = setTimeout(() => {
+    setSteps('borrow', 3);
+    // Change asset status
+    const row = document.getElementById('borrow-asset-0');
+    row.querySelector('div:first-child').style.background = '#3b82f6';
+    row.querySelector('div:last-child').style.background = 'rgba(59,130,246,.15)';
+    row.querySelector('div:last-child').style.color = '#3b82f6';
+    row.querySelector('div:last-child').textContent = 'Diproses';
+  }, 5000);
+  demoTimers.t7 = setTimeout(() => {
+    setSteps('borrow', 4);
+    notif.classList.add('show');
+  }, 6000);
+  demoTimers.t8 = setTimeout(() => {
+    notif.classList.remove('show');
+    demoTimers.restart = setTimeout(() => runBorrowDemo(), 1500);
+  }, 9000);
+}
+
+// ── DEMO: APPROVE ──
+function runApproveDemo() {
+  const screen = document.getElementById('approve-screen');
+  const notif = document.getElementById('approve-notif');
+  notif.classList.remove('show');
+  screen.innerHTML = `
+    <div style="font-size:.75rem;color:var(--text3);margin-bottom:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em">Request Masuk (2 pending)</div>
+    <div id="approve-req-1" style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:10px;margin-bottom:8px;transition:.4s">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+        <div style="font-weight:700;font-size:.82rem">Laptop Dell XPS 15</div>
+        <span style="background:rgba(59,130,246,.15);color:#3b82f6;padding:2px 8px;border-radius:4px;font-size:.65rem;font-weight:600">PENDING</span>
+      </div>
+      <div style="font-size:.75rem;color:var(--text3);margin-bottom:8px">Budi Santoso · IT Division · Batas: 15 Jul 2025</div>
+      <div style="display:flex;gap:6px" id="approve-actions-1">
+        <button id="btn-approve" style="background:var(--purple);color:#fff;border:none;border-radius:6px;padding:6px 12px;font-size:.72rem;font-weight:600;cursor:pointer;flex:1">✓ Approve</button>
+        <button style="background:rgba(239,68,68,.15);color:#ef4444;border:1px solid rgba(239,68,68,.3);border-radius:6px;padding:6px 12px;font-size:.72rem;font-weight:600;cursor:pointer">✗</button>
+      </div>
+    </div>
+    <div id="approve-req-2" style="background:var(--bg3);border:1px solid var(--border2);border-radius:var(--r);padding:10px;opacity:.5">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div style="font-weight:700;font-size:.82rem">Laptop Dell XPS 15</div>
+        <span style="background:rgba(59,130,246,.15);color:#3b82f6;padding:2px 8px;border-radius:4px;font-size:.65rem;font-weight:600">PENDING</span>
+      </div>
+      <div style="font-size:.75rem;color:var(--text3);margin-top:4px">Sari Dewi · HR Division · Batas: 20 Jul 2025</div>
+    </div>
+    <div id="approve-photo-modal" style="display:none;margin-top:10px;background:var(--purple-g);border:1px solid var(--border);border-radius:var(--r);padding:10px">
+      <div style="font-size:.72rem;font-weight:700;color:var(--purple-l);margin-bottom:8px">📷 Upload Foto Kondisi Aset (Wajib)</div>
+      <div id="approve-photo-box" style="border:2px dashed var(--border);border-radius:6px;height:56px;display:flex;align-items:center;justify-content:center;font-size:.72rem;color:var(--text3);transition:.4s">
+        Klik untuk upload atau ambil foto...
+      </div>
+      <button id="btn-confirm-approve" style="margin-top:8px;background:var(--green);color:#fff;border:none;border-radius:6px;padding:7px;width:100%;font-size:.75rem;font-weight:600;cursor:pointer;opacity:.4;transition:.3s" disabled>✓ Confirm Approve</button>
+    </div>`;
+
+  setSteps('approve', 1);
+  demoTimers.t1 = setTimeout(() => {
+    setSteps('approve', 2);
+    document.getElementById('approve-photo-modal').style.display = 'block';
+  }, 1500);
+  demoTimers.t2 = setTimeout(() => {
+    const box = document.getElementById('approve-photo-box');
+    box.style.borderColor = 'var(--green)';
+    box.style.background = 'rgba(16,185,129,.1)';
+    box.innerHTML = `<div style="text-align:center"><div style="font-size:1.2rem">📸</div><div style="font-size:.68rem;color:var(--green);margin-top:2px">foto_laptop_before.jpg ✓</div></div>`;
+    const btn = document.getElementById('btn-confirm-approve');
+    btn.style.opacity = '1';
+    btn.disabled = false;
+  }, 2800);
+  demoTimers.t3 = setTimeout(() => {
+    setSteps('approve', 3);
+    const btn = document.getElementById('btn-confirm-approve');
+    btn.style.background = 'var(--purple)';
+    btn.textContent = '⏳ Memproses...';
+  }, 3800);
+  demoTimers.t4 = setTimeout(() => {
+    // Approve req 1
+    const req1 = document.getElementById('approve-req-1');
+    req1.style.borderColor = 'var(--green)';
+    req1.querySelector('span').style.background = 'rgba(16,185,129,.15)';
+    req1.querySelector('span').style.color = '#10b981';
+    req1.querySelector('span').textContent = 'APPROVED';
+    document.getElementById('approve-actions-1').innerHTML = '<div style="font-size:.72rem;color:var(--green)">✓ Disetujui — Peminjaman aktif</div>';
+    // Auto-reject req 2
+    const req2 = document.getElementById('approve-req-2');
+    req2.style.opacity = '1';
+    req2.style.borderColor = 'rgba(239,68,68,.3)';
+    req2.querySelector('span').style.background = 'rgba(239,68,68,.15)';
+    req2.querySelector('span').style.color = '#ef4444';
+    req2.querySelector('span').textContent = 'AUTO-REJECTED';
+    req2.insertAdjacentHTML('beforeend', '<div style="font-size:.68rem;color:#ef4444;margin-top:4px">Auto-rejected: aset telah disetujui untuk peminjam lain</div>');
+  }, 4800);
+  demoTimers.t5 = setTimeout(() => {
+    setSteps('approve', 4);
+    notif.classList.add('show');
+  }, 5600);
+  demoTimers.t6 = setTimeout(() => {
+    notif.classList.remove('show');
+    demoTimers.restart = setTimeout(() => runApproveDemo(), 1500);
+  }, 9000);
+}
+
+// ── DEMO: RETURN ──
+function runReturnDemo() {
+  const screen = document.getElementById('return-screen');
+  const notif = document.getElementById('return-notif');
+  notif.classList.remove('show');
+  screen.innerHTML = `
+    <div style="font-size:.75rem;color:var(--text3);margin-bottom:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em">Pinjaman Aktif Saya</div>
+    <div id="ret-asset" style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:10px;margin-bottom:10px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+        <div style="font-weight:700;font-size:.82rem">Laptop Dell XPS 15</div>
+        <span style="background:rgba(245,158,11,.15);color:#f59e0b;padding:2px 8px;border-radius:4px;font-size:.65rem;font-weight:600">AKTIF</span>
+      </div>
+      <div style="font-size:.72rem;color:var(--text3)">Dipinjam: 10 Jun · Batas: 15 Jul 2025</div>
+      <button id="btn-return" style="margin-top:8px;background:var(--purple);color:#fff;border:none;border-radius:6px;padding:7px 14px;font-size:.75rem;font-weight:600;cursor:pointer;width:100%">↩️ Kembalikan Aset</button>
+    </div>
+    <div id="ret-form" style="display:none;background:var(--purple-g);border:1px solid var(--border);border-radius:var(--r);padding:10px">
+      <div style="font-size:.72rem;font-weight:700;color:var(--purple-l);margin-bottom:8px">Form Pengembalian</div>
+      <div id="ret-photo-box" style="border:2px dashed var(--border);border-radius:6px;height:52px;display:flex;align-items:center;justify-content:center;font-size:.72rem;color:var(--text3);transition:.4s">📷 Upload foto kondisi saat ini (wajib)</div>
+      <div id="ret-cond" style="opacity:0;transition:.4s;margin-top:8px">
+        <div style="font-size:.7rem;color:var(--text3);margin-bottom:4px">Kondisi Saat Dikembalikan</div>
+        <div style="display:flex;gap:6px">
+          <span id="ret-good" style="padding:4px 10px;border-radius:6px;font-size:.72rem;font-weight:600;cursor:pointer;background:rgba(16,185,129,.15);color:#10b981;border:1px solid rgba(16,185,129,.3)">Good</span>
+          <span style="padding:4px 10px;border-radius:6px;font-size:.72rem;color:var(--text3);cursor:pointer;border:1px solid var(--border2)">Fair</span>
+          <span style="padding:4px 10px;border-radius:6px;font-size:.72rem;color:var(--text3);cursor:pointer;border:1px solid var(--border2)">Poor</span>
+        </div>
+      </div>
+      <div id="ret-ai" style="opacity:0;transition:.4s;margin-top:8px;background:var(--bg3);border:1px solid var(--border2);border-radius:6px;padding:8px">
+        <div style="font-size:.65rem;text-transform:uppercase;letter-spacing:.06em;color:var(--purple-l);margin-bottom:4px">🤖 AI Summary</div>
+        <div id="ret-ai-text" style="font-size:.75rem;color:var(--text2)"></div>
+      </div>
+      <button id="btn-submit-return" style="opacity:0;margin-top:8px;background:var(--green);color:#fff;border:none;border-radius:6px;padding:8px;width:100%;font-size:.75rem;font-weight:600;cursor:pointer;transition:.3s">✓ Submit Pengembalian</button>
+    </div>`;
+
+  setSteps('return', 1);
+  demoTimers.t1 = setTimeout(() => {
+    setSteps('return', 2);
+    document.getElementById('ret-form').style.display = 'block';
+  }, 1200);
+  demoTimers.t2 = setTimeout(() => {
+    const box = document.getElementById('ret-photo-box');
+    box.style.borderColor = 'var(--green)';
+    box.style.background = 'rgba(16,185,129,.08)';
+    box.innerHTML = `<div style="text-align:center"><div style="font-size:1.2rem">📸</div><div style="font-size:.68rem;color:var(--green)">foto_return_laptop.jpg ✓</div></div>`;
+    document.getElementById('ret-cond').style.opacity = '1';
+  }, 2400);
+  demoTimers.t3 = setTimeout(() => {
+    setSteps('return', 3);
+    document.getElementById('ret-ai').style.opacity = '1';
+    typeText('ret-ai-text', 'Kondisi Good → Good. Tidak ada perubahan signifikan. Aset dikembalikan dalam kondisi baik sesuai saat dipinjam.', 30);
+  }, 3400);
+  demoTimers.t4 = setTimeout(() => {
+    document.getElementById('btn-submit-return').style.opacity = '1';
+  }, 6000);
+  demoTimers.t5 = setTimeout(() => {
+    setSteps('return', 4);
+    document.getElementById('ret-asset').querySelector('span').style.background = 'rgba(16,185,129,.15)';
+    document.getElementById('ret-asset').querySelector('span').style.color = '#10b981';
+    document.getElementById('ret-asset').querySelector('span').textContent = 'RETURNED';
+    notif.classList.add('show');
+  }, 7200);
+  demoTimers.t6 = setTimeout(() => {
+    notif.classList.remove('show');
+    demoTimers.restart = setTimeout(() => runReturnDemo(), 1500);
+  }, 10000);
+}
+
+// ── DEMO: QR ──
+function runQRDemo() {
+  setSteps('qr', 1);
+  demoTimers.t1 = setTimeout(() => setSteps('qr', 2), 2000);
+  demoTimers.t2 = setTimeout(() => {
+    setSteps('qr', 3);
+    document.getElementById('qr-result').style.opacity = '1';
+  }, 4000);
+  demoTimers.t3 = setTimeout(() => {
+    document.getElementById('qr-result').style.opacity = '0';
+    demoTimers.restart = setTimeout(() => runQRDemo(), 1000);
+  }, 8000);
+}
+
+// ── DEMO: DASHBOARD ──
+function runDashboardDemo() {
+  const screen = document.getElementById('dashboard-screen');
+  screen.innerHTML = `
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px">
+      <div style="background:var(--bg3);border:1px solid var(--border2);border-radius:8px;padding:10px">
+        <div style="font-size:1.2rem;font-weight:800;color:var(--purple-l)" id="d-total">0</div>
+        <div style="font-size:.65rem;color:var(--text3);text-transform:uppercase">Total Aset</div>
+      </div>
+      <div style="background:var(--bg3);border:1px solid var(--border2);border-radius:8px;padding:10px">
+        <div style="font-size:1.2rem;font-weight:800;color:var(--yellow)" id="d-borrow">0</div>
+        <div style="font-size:.65rem;color:var(--text3);text-transform:uppercase">Dipinjam</div>
+      </div>
+      <div style="background:var(--bg3);border:1px solid var(--border2);border-radius:8px;padding:10px">
+        <div style="font-size:1.2rem;font-weight:800;color:var(--green)" id="d-avail">0</div>
+        <div style="font-size:.65rem;color:var(--text3);text-transform:uppercase">Tersedia</div>
+      </div>
+    </div>
+    <div style="background:var(--bg3);border:1px solid var(--border2);border-radius:8px;padding:10px;margin-bottom:8px">
+      <div style="font-size:.7rem;color:var(--text3);margin-bottom:8px;font-weight:600">Peminjaman per Bulan</div>
+      <div style="display:flex;align-items:flex-end;gap:4px;height:60px" id="d-chart"></div>
+    </div>
+    <div style="background:var(--bg3);border:1px solid var(--border2);border-radius:8px;padding:10px">
+      <div style="font-size:.7rem;color:var(--text3);margin-bottom:8px;font-weight:600">Kategori Aset</div>
+      <div id="d-cats"></div>
+    </div>`;
+
+  setSteps('dashboard', 1);
+  animateCounter(document.getElementById('d-total'), 247);
+  animateCounter(document.getElementById('d-borrow'), 38);
+  animateCounter(document.getElementById('d-avail'), 196);
+
+  const chart = document.getElementById('d-chart');
+  [12,18,15,24,20,31,28,38].forEach((h, i) => {
+    const bar = document.createElement('div');
+    bar.style.cssText = `flex:1;border-radius:3px 3px 0 0;background:${i===7?'var(--purple)':'var(--purple-g)'};border:1px solid var(--border);animation:bar-grow .6s ease-out ${i*0.07}s both`;
+    bar.style.height = `${(h/38)*100}%`;
+    chart.appendChild(bar);
+  });
+
+  demoTimers.t1 = setTimeout(() => {
+    setSteps('dashboard', 2);
+    const cats = document.getElementById('d-cats');
+    const data = [{name:'Elektronik', pct:45, color:'var(--purple)'},{name:'Kendaraan', pct:22, color:'var(--yellow)'},{name:'Furnitur', pct:18, color:'var(--blue)'},{name:'Lainnya', pct:15, color:'var(--text3)'}];
+    data.forEach(d => {
+      cats.insertAdjacentHTML('beforeend', `<div style="margin-bottom:6px">
+        <div style="display:flex;justify-content:space-between;font-size:.7rem;margin-bottom:3px">
+          <span>${d.name}</span><span style="color:${d.color};font-weight:700">${d.pct}%</span>
+        </div>
+        <div style="height:5px;background:var(--bg4);border-radius:99px;overflow:hidden">
+          <div style="height:100%;width:0;background:${d.color};border-radius:99px;transition:width 1s ease-out" data-w="${d.pct}%"></div>
+        </div></div>`);
+    });
+    setTimeout(() => {
+      cats.querySelectorAll('[data-w]').forEach(el => el.style.width = el.dataset.w);
+    }, 100);
+  }, 1500);
+  demoTimers.t2 = setTimeout(() => setSteps('dashboard', 3), 3000);
+  demoTimers.t3 = setTimeout(() => runDashboardDemo(), 6000);
+}
+
+// ── STEP HELPER ──
+function setSteps(demo, active) {
+  for (let i = 1; i <= 5; i++) {
+    const el = document.getElementById(`${demo}-s${i}`);
+    if (!el) break;
+    el.classList.remove('current', 'done');
+    if (i < active) el.classList.add('done');
+    else if (i === active) el.classList.add('current');
+  }
+}
+
+// ── TYPEWRITER ──
+function typeText(targetId, text, speed = 50) {
+  const el = document.getElementById(targetId);
+  if (!el) return;
+  el.textContent = '';
+  let i = 0;
+  const t = setInterval(() => {
+    el.textContent += text[i];
+    i++;
+    if (i >= text.length) clearInterval(t);
+  }, speed);
+}
+
+const demos = {
+  borrow: runBorrowDemo,
+  approve: runApproveDemo,
+  return: runReturnDemo,
+  qr: runQRDemo,
+  dashboard: runDashboardDemo,
+};
+
+// Start first demo
+setTimeout(() => runBorrowDemo(), 500);
+
+// ── SCROLL REVEAL ──
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add('visible');
+      observer.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.15 });
+document.querySelectorAll('.scroll-reveal').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
