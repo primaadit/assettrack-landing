@@ -106,8 +106,12 @@
     .demo-tab { flex:0 0 auto; min-width:110px; padding:10px 16px; border-radius:8px; border:none; background:transparent; color:var(--text3); font-weight:600; font-size:.85rem; cursor:pointer; transition:.2s; white-space:nowrap; }
     .demo-tab.active { background:var(--purple); color:#fff; box-shadow:0 4px 12px rgba(124,58,237,.4); }
     .demo-tab:hover:not(.active) { color:var(--text); background:var(--bg4); }
-    .demo-panel { display:none; }
-    .demo-panel.active { display:grid; grid-template-columns:1fr 1fr; gap:48px; align-items:start; min-height:420px; }
+    .demo-panels-wrap { position:relative; min-height:500px; }
+    .demo-panel { display:grid; grid-template-columns:1fr 1fr; gap:48px; align-items:start;
+                  position:absolute; top:0; left:0; right:0;
+                  opacity:0; visibility:hidden; pointer-events:none;
+                  transition:opacity .25s ease; }
+    .demo-panel.active { opacity:1; visibility:visible; pointer-events:auto; }
     .demo-info .step-num { width:28px; height:28px; border-radius:50%; background:var(--purple); display:inline-flex; align-items:center; justify-content:center; font-weight:700; font-size:.8rem; margin-right:10px; flex-shrink:0; }
     .demo-steps { margin-top:20px; }
     .demo-step { display:flex; align-items:flex-start; gap:12px; padding:10px 0; opacity:.4; transition:.4s; }
@@ -119,7 +123,7 @@
     .step-text { font-size:.9rem; }
     .step-title { font-weight:600; }
     .step-desc { font-size:.8rem; color:var(--text3); margin-top:2px; }
-    @media(max-width:768px) { .demo-panel.active { grid-template-columns:1fr; } }
+    @media(max-width:768px) { .demo-panel { grid-template-columns:1fr; } .demo-panels-wrap { min-height:860px; } }
 
     /* Animated mockup screen */
     .demo-screen { background:var(--card); border:1px solid var(--border); border-radius:var(--r2); overflow:hidden; min-height:360px; position:relative; box-shadow:var(--shadow); }
@@ -358,7 +362,8 @@
         <button class="demo-tab" onclick="switchDemo('qr')">📱 Scan QR</button>
         <button class="demo-tab" onclick="switchDemo('dashboard')">📊 Dashboard</button>
       </div>
-      <div id="demo-borrow" class="demo-panel active scroll-reveal">
+      <div class="demo-panels-wrap">
+      <div id="demo-borrow" class="demo-panel active">
         <div class="demo-info">
           <h3 style="font-size:1.2rem;font-weight:700;margin-bottom:8px">User Ajukan Peminjaman</h3>
           <p style="font-size:.9rem;color:var(--text3);margin-bottom:20px">Pilih aset, isi tanggal, submit — sistem langsung lock aset untuk mencegah double booking.</p>
@@ -544,6 +549,7 @@
           <div class="screen-body" id="dashboard-screen"></div>
         </div>
       </div>
+      </div><!-- /demo-panels-wrap -->
     </div>
   </div>
 </section>
