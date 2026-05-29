@@ -68,6 +68,7 @@
     .hero-title .accent { color:var(--purple-l); }
     .hero-desc { color:var(--text2); font-size:1.1rem; margin-bottom:32px; max-width:480px; }
     .hero-ctas { display:flex; gap:12px; flex-wrap:wrap; }
+    @media(max-width:480px) { .hero-ctas .btn { flex:1 1 auto; justify-content:center; min-width:0; } .cta-ctas .btn { flex:1 1 auto; justify-content:center; min-width:0; width:100%; } }
     .hero-stats { display:flex; gap:32px; margin-top:40px; padding-top:32px; border-top:1px solid var(--border2); }
     .stat-item { }
     .stat-num { font-size:1.5rem; font-weight:800; color:var(--purple-l); }
@@ -100,12 +101,13 @@
 
     /* ── DEMO SECTION ── */
     #demo { background:var(--bg2); }
-    .demo-tabs { display:flex; gap:4px; background:var(--bg3); border:1px solid var(--border); border-radius:var(--r2); padding:4px; margin-bottom:40px; flex-wrap:wrap; }
-    .demo-tab { flex:1; min-width:120px; padding:10px 16px; border-radius:8px; border:none; background:transparent; color:var(--text3); font-weight:600; font-size:.85rem; cursor:pointer; transition:.2s; white-space:nowrap; }
+    .demo-tabs { display:flex; gap:4px; background:var(--bg3); border:1px solid var(--border); border-radius:var(--r2); padding:4px; margin-bottom:40px; overflow-x:auto; flex-wrap:nowrap; -webkit-overflow-scrolling:touch; scrollbar-width:none; }
+    .demo-tabs::-webkit-scrollbar { display:none; }
+    .demo-tab { flex:0 0 auto; min-width:110px; padding:10px 16px; border-radius:8px; border:none; background:transparent; color:var(--text3); font-weight:600; font-size:.85rem; cursor:pointer; transition:.2s; white-space:nowrap; }
     .demo-tab.active { background:var(--purple); color:#fff; box-shadow:0 4px 12px rgba(124,58,237,.4); }
     .demo-tab:hover:not(.active) { color:var(--text); background:var(--bg4); }
     .demo-panel { display:none; }
-    .demo-panel.active { display:grid; grid-template-columns:1fr 1fr; gap:48px; align-items:start; }
+    .demo-panel.active { display:grid; grid-template-columns:1fr 1fr; gap:48px; align-items:start; min-height:420px; }
     .demo-info .step-num { width:28px; height:28px; border-radius:50%; background:var(--purple); display:inline-flex; align-items:center; justify-content:center; font-weight:700; font-size:.8rem; margin-right:10px; flex-shrink:0; }
     .demo-steps { margin-top:20px; }
     .demo-step { display:flex; align-items:flex-start; gap:12px; padding:10px 0; opacity:.4; transition:.4s; }
@@ -167,6 +169,10 @@
     .price-cta:hover { background:var(--purple); color:#fff; }
     .popular .price-cta { background:var(--purple); color:#fff; }
     .popular .price-cta:hover { background:var(--purple-h); }
+    .price-card.nonprofit { border-color:var(--green); box-shadow:0 0 24px rgba(16,185,129,.12); }
+    .nonprofit-ribbon { position:absolute; top:14px; right:-30px; background:var(--green); color:#fff; font-size:.62rem; font-weight:800; padding:4px 40px; transform:rotate(45deg); letter-spacing:.05em; white-space:nowrap; }
+    .nonprofit .price-cta { background:rgba(16,185,129,.15); color:var(--green); border-color:rgba(16,185,129,.4); }
+    .nonprofit .price-cta:hover { background:var(--green); color:#fff; }
 
     /* ── ABOUT DEV ── */
     #about { background:var(--bg2); }
@@ -619,7 +625,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr><td>Harga terjangkau (SaaS)</td><td class="col-us"><span class="check">✓</span> Mulai gratis</td><td><span class="cross">✗</span> Mahal</td><td><span class="check">✓</span></td><td><span class="check">✓</span></td></tr>
+          <tr><td>Harga terjangkau (SaaS)</td><td class="col-us"><span class="check">✓</span> Rp 500rb/bln</td><td><span class="cross">✗</span> Mahal</td><td><span class="check">✓</span></td><td><span class="check">✓</span></td></tr>
           <tr><td>Atomic lock double-booking</td><td class="col-us"><span class="check">✓</span> PostgreSQL</td><td><span class="check">✓</span></td><td><span class="cross">✗</span></td><td><span class="cross">✗</span></td></tr>
           <tr><td>Foto dokumentasi wajib</td><td class="col-us"><span class="check">✓</span> Before & After</td><td><span class="partial">Terbatas</span></td><td><span class="cross">✗</span></td><td><span class="partial">Opsional</span></td></tr>
           <tr><td>Real-time status sync</td><td class="col-us"><span class="check">✓</span> Supabase RT</td><td><span class="check">✓</span></td><td><span class="cross">✗</span></td><td><span class="partial">Perlu refresh</span></td></tr>
@@ -711,12 +717,13 @@
         <button class="price-cta" style="background:var(--yellow);color:#000;border-color:var(--yellow);font-weight:700" onclick="window.open('https://wa.me/6281229590817?text=Halo%20Prima%2C%20saya%20tertarik%20paket%20Lifetime%20AssetTrack','_blank')">Dapatkan Lifetime →</button>
       </div>
       <!-- Sosial / Nonprofit -->
-      <div class="price-card scroll-reveal">
+      <div class="price-card nonprofit scroll-reveal" style="position:relative;overflow:hidden">
+        <div class="nonprofit-ribbon">Sosial / Gratis</div>
         <div class="price-name">🕌 Sosial & Non-Profit</div>
-        <div class="price-amount">Khusus <span>/ hubungi kami</span></div>
-        <div class="price-desc">Untuk masjid, yayasan, pesantren, LSM, dan organisasi sosial non-komersial</div>
+        <div class="price-amount" style="color:var(--green)">Harga Khusus <span>/ gratis / subsidi</span></div>
+        <div class="price-desc" style="border-bottom-color:rgba(16,185,129,.2)">Untuk masjid, yayasan, pesantren, LSM, dan organisasi sosial non-komersial</div>
         <ul class="price-features">
-          <li>Harga spesial non-profit</li>
+          <li>Gratis atau bersubsidi penuh</li>
           <li>Semua fitur lengkap</li>
           <li>Kelola aset & inventaris wakaf</li>
           <li>Multi-pengurus & bidang</li>
@@ -768,22 +775,22 @@
           <div class="exp-item">
             <div class="exp-dot"></div>
             <div class="exp-text">
-              <div class="exp-company">LPEI — Eximbank Indonesia</div>
-              <div class="exp-detail">Senior IT Infrastructure & Security · 5+ tahun</div>
+              <div class="exp-company">Indonesia Eximbank (LPEI)</div>
+              <div class="exp-detail">Sr. IT Infrastructure & Security · Apr 2025–Sekarang · Lembaga Pemerintah dibawah Kementerian Keuangan RI</div>
             </div>
           </div>
           <div class="exp-item">
             <div class="exp-dot"></div>
             <div class="exp-text">
-              <div class="exp-company">PT Rekayasa Industri (Rekind) — BUMN</div>
-              <div class="exp-detail">IT Infrastructure Engineer</div>
+              <div class="exp-company">PT Amanullah Modis Mandiri</div>
+              <div class="exp-detail">IT Infrastructure Supervisor · Feb 2024–Mar 2025</div>
             </div>
           </div>
           <div class="exp-item">
             <div class="exp-dot"></div>
             <div class="exp-text">
-              <div class="exp-company">PT Amanullah</div>
-              <div class="exp-detail">IT Security & Infrastructure</div>
+              <div class="exp-company">PT Rekind Daya Mamuju — BUMN Power Generation</div>
+              <div class="exp-detail">IT Infrastructure Supervisor · Feb 2020–Okt 2023</div>
             </div>
           </div>
         </div>
@@ -845,8 +852,8 @@
       </div>
     </div>
     <div class="footer-bottom">
-      <p>© 2024 AssetTrack by Salim Labs. Dibangun dengan ❤️ oleh Prima Praditya.</p>
-      <p style="font-family:'JetBrains Mono',monospace;font-size:.72rem">v9.2 · React · Supabase · Vite</p>
+      <p>© 2026 Prima Praditya · Powered by Salim Labs</p>
+      <p style="font-size:.75rem;color:var(--text3)">AssetTrack — Sistem Manajemen Aset Perusahaan</p>
     </div>
   </div>
 </footer>
